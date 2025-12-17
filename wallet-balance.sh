@@ -20,10 +20,12 @@ TOKENS["WIF"]="EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"
 if ! command -v curl >/dev/null 2>&1; then
 	echo "${RED}Error: curl is required.${NC}"
 	exit 1
+fi
 
 if ! command -v jq >/dev/null 2>&1; then
 	echo "{RED}Error: jq is required.${NC}"
 	exit 1
+fi
 	
 
 print_usage(){
@@ -125,7 +127,7 @@ while [[ $# -gt 0 ]]; do
 				WALLET="$1"
 			else
 				echo "Multiple wallets not supported yet."
-				ecit 1
+				exit 1
 			fi
 			;;
 	esac			
