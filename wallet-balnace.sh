@@ -12,4 +12,34 @@ RPC_URL="https://api.mainnet-beta.solana.com"
 
 declare -A TOKENS
 
+TOKENS["USDC"] = "";
+TOKENS["JUP"] = "";
+TOKENS["BONK"] = "";
+TOKENS["WIF"] = "";
 
+command -V curl >/dev/null ||{echo -e "${RED}Error:curl is required.${NC}";exit 1;}
+command -V jq >/dev/null || {echo -e "${RED}Error:jq is required. Install with : brew install jq(macOS) or apt install jq(Linux)${NC}"; exit 1;}
+
+print_usage(){
+	cat <<EOF
+Usage: $(basename "$0") [options]
+
+Options:
+
+-w, --watch SECONDS Auto-refresh every N seconds(e.g.,-w 30)
+-t, --tokens Show popular token balances (USDC, JUP, BONK, WIF)
+-u, --usd Show USD values(requires internet)
+-h, --help Show this help message
+
+Example:
+	$(basename "$0") 7vWj...your_wallet_address --tokens --usd --watch 60
+EOF
+}
+
+get_sol_balance(){
+	local wallet="$1"
+	local lamports lamports=$(curl -s -X POST "$RPC_URL"\
+						-H "Content-Type:application/json"\
+						-d "{\"jsonrpc\":	
+}
+}
