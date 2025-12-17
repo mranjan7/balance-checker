@@ -60,3 +60,91 @@ get_sol_price_usd(){
 	jq -r '.solana.usd //"N/A"'
 }
 
+display_balnace(){
+	local wallet="$1"
+	local show_tokens="$2"
+	local show_usd="$3"
+	local lamports=$(get_sol_balance "$wallet"
+	local sol=$(echo "scale=4; $lamports/1000000000"|bc -l 2>/dev/null || echo "0")
+
+	echo -e "${BLUE}Wallet:${NC} $wallet"
+	echo -e "${GREEN}SOL balance:${NC} $sol SOL"
+
+	if [[ "$show_usd" == true ]]; then
+		local price=$(get_sol_price_usd)
+		if [["$price" !="N/A" ]]; then
+			local usd_value=$(echo "$sol * $price" | bc -l 2>/dev/null || echo "0")
+			echo -e "${YELLOW} = $${usd_value} USD${NC} (at ~\$$price/SOL)"
+		fi
+	fi
+
+	if [["$show_tokens" == true ]]; then
+		echo -e "\n${BLUE}Popular Tokens:${NC}"
+		for symbol in "${!TOKEN[@]}"; do
+			local balance=$(get_token_balance "$wallet" "${TOKENS[$symbol]}")
+			printf " %-6s %s\n" "$symbol:" "$balance"
+		done
+	fi
+	echo ""
+
+}
+
+WALLET=""
+WATCH_INTERVAL=0
+SHOW_TOKENS=false
+SHOW_USD=false
+
+while [[ $# -gt 0]]; do
+	case $1 in
+		-h|--help)
+			print_usage
+			exit 0
+			;;
+		-w|--watch)
+			WATCH_INTERVAL="$2"
+			shift
+			;;
+		-t|--tokens)
+			SHOW_TOKENS=true
+			;;
+		-u|--usd)
+			SHOW_USD=true
+			;;
+		-*)
+			echo "Unknown option: $1"
+			print-usage
+			exit 1
+			;;
+		*)
+			if [[ -z "$WALLET" ]]; then
+				WALLET="$1"
+			else
+				echo "Multiple wallets not supported yet."
+				ecit 1
+			fi
+			;;
+		esac			
+		shift
+	done
+
+if [[ -z "$WALLET" ]]; then
+	echo -e "${RED}Error: Wallet address required. ${NC}"
+	print_usage
+	exit 1
+fi	
+
+if [[ ${#WALLET} -lt 32 || ${#WALLET} -gt 44]]; then
+	echo -e "${RED}Error: Invalid Solana Wallet address length.${NC}"
+	exit 1
+fi
+
+if [[ $WATCH_INTERVAL -gt 0 ]]; then
+	while true; do
+		clear
+		echo -e "${YELLOW}Solana Balance Checker (refresh ecery ${WATCH_INTERVAKL}s) - Ctrl+C to stop${NC}\n"
+		display_balance "$WALLET" "$HOW_TOKENS" "$SHOW_USD"
+		sleep "$WATCH_INTERVAL"
+	done
+else
+	display_balance "$WALLET" "$SHOW_TOKENS" "$SHOW_USD"	
+fi
