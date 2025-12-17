@@ -58,7 +58,7 @@ get_token_balance(){
 	local token_account=$(curl -s -X POST "$RPC_URL"\
 				-H "Content-Type:application/json"\
 				-d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTokenAccountsByOwner\",\"params\":[\"$wallet\",{\"mint\":\"$mint\"},{\"encoding\":\"jsonParsed\"}]}") || return 1
-	echo "$token_account"|jq -r '.resul.value[0].account.data.parsed.info.tokenAmount.uiAmount//0'
+	echo "$token_account"|jq -r '.result.value[0].account.data.parsed.info.tokenAmount.uiAmount//0'
 
 	
 }
