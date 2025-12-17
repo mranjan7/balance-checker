@@ -64,7 +64,7 @@ get_token_balance(){
 }
 
 get_sol_price_usd(){
-	curl -s "https://api.coingecko.com/api/v3/simple/price?ids=solana$vs_currencies=usd"|\
+	curl -s "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"|\
 	jq -r '.solana.usd //"N/A"'
 }
 
@@ -82,7 +82,7 @@ display_balance(){
 		local price=$(get_sol_price_usd)
 		if [[ "$price" != "N/A" ]]; then
 			local usd_value=$(echo "$sol * $price" | bc -l 2>/dev/null || echo "0")
-			echo -e "${YELLOW} = $${usd_value} USD${NC} (at ~\$$price/SOL)"
+			echo -e "${YELLOW} = ${usd_value} USD${NC} (at ~\$$price/SOL)"
 		fi
 	fi
 
