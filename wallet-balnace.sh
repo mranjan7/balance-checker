@@ -40,6 +40,7 @@ get_sol_balance(){
 	local wallet="$1"
 	local lamports lamports=$(curl -s -X POST "$RPC_URL"\
 						-H "Content-Type:application/json"\
-						-d "{\"jsonrpc\":	
+						-d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getBalance\",\"params\":[\"$wallet\"]}") || return 1
+	echo "$lamports" | jq -r'.result.value//0'	
 }
 }
