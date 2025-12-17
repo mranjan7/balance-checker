@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -17,8 +17,14 @@ TOKENS["JUP"]="JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN"
 TOKENS["BONK"]="DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
 TOKENS["WIF"]="EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"
 
-command -V curl >/dev/null ||{echo -e "${RED}Error:curl is required.${NC}";exit 1;}
-command -V jq >/dev/null || {echo -e "${RED}Error:jq is required. Install with : brew install jq(macOS) or apt install jq(Linux)${NC}"; exit 1;}
+if ! command -v curl >/dev/null 2>&1; then
+	echo "${RED}Error: curl is required.${NC}"
+	exit 1
+
+if ! command -v jq >/dev/null 2>&1; then
+	echo "{RED}Error: jq is required.${NC}"
+	exit 1
+	
 
 print_usage(){
 	cat <<EOF
@@ -49,22 +55,22 @@ get_token_balance(){
 	local mint="$2"
 	local token_account=$(curl -s -X POST "$RPC_URL"\
 				-H "Content-Type:application/json"\
-				-d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTokenAccountByOwner\",\"params\":[\"$wallet\",{\"mint\":\"$mint\"},{\"encoding\":\"jsonParsed\"}]}") || return 1
-	echo "$token_account"|jq -r '.rresul.value[0].account.data.parsed.info.tokenAmount.uiAmount//0'
+				-d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTokenAccountsByOwner\",\"params\":[\"$wallet\",{\"mint\":\"$mint\"},{\"encoding\":\"jsonParsed\"}]}") || return 1
+	echo "$token_account"|jq -r '.resul.value[0].account.data.parsed.info.tokenAmount.uiAmount//0'
 
 	
 }
 
 get_sol_price_usd(){
-	curl -S "https://api.coingecko.xom/api/v3/simple/price?ids=solana$vs_currencies=usd"|\
+	curl -s "https://api.coingecko.com/api/v3/simple/price?ids=solana$vs_currencies=usd"|\
 	jq -r '.solana.usd //"N/A"'
 }
 
-display_balnace(){
+display_balance(){
 	local wallet="$1"
 	local show_tokens="$2"
 	local show_usd="$3"
-	local lamports=$(get_sol_balance "$wallet"
+	local lamports=$(get_sol_balance "$wallet")
 	local sol=$(echo "scale=4; $lamports/1000000000"|bc -l 2>/dev/null || echo "0")
 
 	echo -e "${BLUE}Wallet:${NC} $wallet"
@@ -72,15 +78,15 @@ display_balnace(){
 
 	if [[ "$show_usd" == true ]]; then
 		local price=$(get_sol_price_usd)
-		if [["$price" !="N/A" ]]; then
+		if [[ "$price" != "N/A" ]]; then
 			local usd_value=$(echo "$sol * $price" | bc -l 2>/dev/null || echo "0")
 			echo -e "${YELLOW} = $${usd_value} USD${NC} (at ~\$$price/SOL)"
 		fi
 	fi
 
-	if [["$show_tokens" == true ]]; then
+	if [[ "$show_tokens" == true ]]; then
 		echo -e "\n${BLUE}Popular Tokens:${NC}"
-		for symbol in "${!TOKEN[@]}"; do
+		for symbol in "${!TOKENS[@]}"; do
 			local balance=$(get_token_balance "$wallet" "${TOKENS[$symbol]}")
 			printf " %-6s %s\n" "$symbol:" "$balance"
 		done
@@ -93,7 +99,7 @@ WATCH_INTERVAL=0
 SHOW_TOKENS=false
 SHOW_USD=false
 
-while [[ $# -gt 0]]; do
+while [[ $# -gt 0 ]]; do
 	case $1 in
 		-h|--help)
 			print_usage
@@ -111,7 +117,7 @@ while [[ $# -gt 0]]; do
 			;;
 		-*)
 			echo "Unknown option: $1"
-			print-usage
+			print_usage
 			exit 1
 			;;
 		*)
@@ -122,9 +128,9 @@ while [[ $# -gt 0]]; do
 				ecit 1
 			fi
 			;;
-		esac			
-		shift
-	done
+	esac			
+	shift
+done
 
 if [[ -z "$WALLET" ]]; then
 	echo -e "${RED}Error: Wallet address required. ${NC}"
@@ -132,7 +138,7 @@ if [[ -z "$WALLET" ]]; then
 	exit 1
 fi	
 
-if [[ ${#WALLET} -lt 32 || ${#WALLET} -gt 44]]; then
+if [[ ${#WALLET} -lt 32 || ${#WALLET} -gt 44 ]]; then
 	echo -e "${RED}Error: Invalid Solana Wallet address length.${NC}"
 	exit 1
 fi
@@ -140,8 +146,8 @@ fi
 if [[ $WATCH_INTERVAL -gt 0 ]]; then
 	while true; do
 		clear
-		echo -e "${YELLOW}Solana Balance Checker (refresh ecery ${WATCH_INTERVAKL}s) - Ctrl+C to stop${NC}\n"
-		display_balance "$WALLET" "$HOW_TOKENS" "$SHOW_USD"
+		echo -e "${YELLOW}Solana Balance Checker (refresh ecery ${WATCH_INTERVAL}s) - Ctrl+C to stop${NC}\n"
+		display_balance "$WALLET" "$SHOW_TOKENS" "$SHOW_USD"
 		sleep "$WATCH_INTERVAL"
 	done
 else
