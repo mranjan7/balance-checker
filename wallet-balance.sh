@@ -49,7 +49,7 @@ get_sol_balance(){
 	local lamports lamports=$(curl -s -X POST "$RPC_URL"\
 						-H "Content-Type:application/json"\
 						-d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getBalance\",\"params\":[\"$wallet\"]}") || return 1
-	echo "$lamports" | jq -r'.result.value//0'	
+	echo "$lamports" | jq -r '.result.value//0'	
 }
 
 get_token_balance(){
