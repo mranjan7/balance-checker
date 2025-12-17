@@ -12,10 +12,10 @@ RPC_URL="https://api.mainnet-beta.solana.com"
 
 declare -A TOKENS
 
-TOKENS["USDC"] = "";
-TOKENS["JUP"] = "";
-TOKENS["BONK"] = "";
-TOKENS["WIF"] = "";
+TOKENS["USDC"]="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+TOKENS["JUP"]="JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN"
+TOKENS["BONK"]="DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
+TOKENS["WIF"]="EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"
 
 command -V curl >/dev/null ||{echo -e "${RED}Error:curl is required.${NC}";exit 1;}
 command -V jq >/dev/null || {echo -e "${RED}Error:jq is required. Install with : brew install jq(macOS) or apt install jq(Linux)${NC}"; exit 1;}
