@@ -55,3 +55,8 @@ get_token_balance(){
 	
 }
 
+get_sol_price_usd(){
+	curl -S "https://api.coingecko.xom/api/v3/simple/price?ids=solana$vs_currencies=usd"|\
+	jq -r '.solana.usd //"N/A"'
+}
+
