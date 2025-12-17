@@ -43,4 +43,15 @@ get_sol_balance(){
 						-d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getBalance\",\"params\":[\"$wallet\"]}") || return 1
 	echo "$lamports" | jq -r'.result.value//0'	
 }
+
+get_token_balance(){
+	local wallet="$1"
+	local mint="$2"
+	local token_account=$(curl -s -X POST "$RPC_URL"\
+				-H "Content-Type:application/json"\
+				-d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTokenAccountByOwner\",\"params\":[\"$wallet\",{\"mint\":\"$mint\"},{\"encoding\":\"jsonParsed\"}]}") || return 1
+	echo "$token_account"|jq -r '.rresul.value[0].account.data.parsed.info.tokenAmount.uiAmount//0'
+
+	
 }
+
