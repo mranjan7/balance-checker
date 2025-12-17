@@ -1,0 +1,179 @@
+   0 ls
+   1 mkdir hello
+   2 cd hello/
+   3 git
+   4 ls
+   5 clear
+   6 vi balance_checker.sh
+   7 ls
+   8 cd hello/
+   9 ls
+  10 cd ..
+  11 mkdir dev
+  12 cd dev/
+  13 ls
+  14 vi wallet-balnace.sh
+  15 ls
+  16 git
+  17 apk add git
+  18 l
+  19 ls
+  20 cd dev
+  21 ls
+  22 vi wallet-balnace.sh 
+  23 ls
+  24 git
+  25 ls
+  26 cd ~/
+  27 ls
+  28 cd
+  29 ls
+  30 mkdir .ssh
+  31 cd ~/.ssh && ssh-keygen
+  32 apk add ssh-keygen
+  33 apk update && \
+  34       apk add --no-cache \
+  35       openssh-keygen
+  36 clear
+  37 ssh-keygen
+  38 ls
+  39 open id_rsa.pub 
+  40 vi id_rsa.pub 
+  41 cat id_rsa.pub 
+  42 cd
+  43 clear
+  44 ls 
+  45 cd dev
+  46 ls
+  47 mkdir balance-checker
+  48 mv wallet-balnace.sh balance-checker/
+  49 cd balance-checker/
+  50 ls
+  51 git add .
+  52 git init
+  53 git add .
+  54 git commit -m "first commit"
+  55 git config --global user.email "mukeshr@tuta.com"
+  56 git config --global user.name "Mukesh Ranjan"
+  57 git commit -m "first commit"
+  58 git push -u origin main
+  59 git remote add origin git@github.com:mranjan7/balance-checker.git
+  60 git branch -M main
+  61 git push -u origin main
+  62 ls ~/ssh
+  63 ls~/.ssh
+  64 ld ~/ssh
+  65 ls ~/.ssh
+  66 git remote add origin git@github.com:mranjan7/balance-checker.git
+  67 git branch -M main
+  68 git push -u origin main
+  69 apk add openssh-client
+  70 git push -u origin main
+  71 clear
+  72 ls
+  73 vi wallet-balnace.sh 
+  74 git add .
+  75 git commit -m "latest commit"
+  76 git push -u origin main
+  77 ls
+  78 vi wallet-balnace.sh 
+  79 git add .
+  80 git push -u origin main
+  81 git commit -m "latest commit"
+  82 git push -u origin main
+  83 clear
+  84 vi wallet-balnace.sh 
+  85 git add .
+  86 git commit -m "latest commit"
+  87 git push -u origin main
+  88 clear
+  89 vi wallet-balnace.sh 
+  90 git add .
+  91 git commit -m "latest commit"
+  92 git push -u origin main
+  93 clear
+  94 vi wallet-balnace.sh 
+  95 pwd
+  96 ls
+  97 cd dev
+  98 ls
+  99 cd balance-checker/
+ 100 ls
+ 101 vi wallet-balnace.sh 
+ 102 clear
+ 103 git add .
+ 104 git commit -m "latest commit"
+ 105 git push -u origin main
+ 106 vi wallet-balnace.sh 
+ 107 git add .
+ 108 git commit -m "latest commit"
+ 109 git push -u origin main
+ 110 clear
+ 111 vi wallet-balnace.sh 
+ 112 git add .
+ 113 git commit -m "latest commit"
+ 114 git push -u origin main
+ 115 gg:wq
+ 116 clear
+ 117 vi wallet-balnace.sh 
+ 118 git add .
+ 119 git commit -m "latest commit"
+ 120 git push -u origin main
+ 121 clear
+ 122 apk add jq
+ 123 clear
+ 124 vi wallet-balnace.sh 
+ 125 chmod u+x wallet-balnace.sh
+ 126 ./wallet-balnace.sh 
+ 127 ls
+ 128 mv wallet-balnace.sh wallet-balance.sh
+ 129 chmod +x wallet-balance.sh 
+ 130 ./wallet-balance.sh 
+ 131 bash
+ 132 apk add bash
+ 133 bash
+ 134 ./wallet-balance.sh 
+ 135 apk add bash
+ 136 ls
+ 137 cd dev
+ 138 ls
+ 139 cd balance-checker/
+ 140 ls
+ 141 ./wallet-balance.sh 
+ 142 clear
+ 143 git add .
+ 144 git commit -m "latest commit"
+ 145 git push -u origin main
+ 146 ./wallet-balance.sh 1nc1nerator11111111111111111111111111111111
+ 147 clear
+ 148 vi wallet-balance.sh 
+ 149 ./wallet-balance.sh 1nc1nerator11111111111111111111111111111111
+ 150 git add .
+ 151 git commit -m "latest commit"
+ 152 git push -u origin main
+ 153 vi wallet-balance.sh 
+ 154 ./wallet-balance.sh 1nc1nerator11111111111111111111111111111111
+ 155 git add .
+ 156 git commit -m "latest commit"
+ 157 git push -u origin main
+ 158 ./wallet-balance.sh
+ 159 ./wallet-balance.sh 1nc1nerator11111111111111111111111111111111 -t -u
+ 160 git add .
+ 161 git commit -m "latest commit"
+ 162 git push -u origin main
+ 163 vi wallet-balance.sh 
+ 164 clear
+ 165 ./wallet-balance.sh 1nc1nerator11111111111111111111111111111111 -t -u
+ 166 git add .
+ 167 git commit -m "latest commit"
+ 168 git push -u origin main
+ 169 vi wallet-balance.sh 
+ 170 clear
+ 171 ./wallet-balance.sh 1nc1nerator11111111111111111111111111111111 -t -u
+ 172 vi wallet-balance.sh 
+ 173 clear
+ 174 73vtaFhNjFRVNbQmgnQQvDNy1MwWSjgqX3rxuNzJ5PaD
+ 175 ./wallet-balance.sh 73vtaFhNjFRVNbQmgnQQvDNy1MwWSjgqX3rxuNzJ5PaD -t -u
+ 176 EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm
+ 177 ./wallet-balance.sh EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm -t -u
+ 178 history > o.txt
