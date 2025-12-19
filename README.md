@@ -32,25 +32,26 @@ Options
 	•	-w, --watch N Auto-refresh every N seconds
 	•	-h, --help Show help
 ## Examples
-# Basic SOL balance
+**Basic SOL balance**
 ```bash
 ./sol-balance.sh 7vWj...yourAddress
 ```
-# With tokens + USD
+**With tokens + USD**
 ```bash
 ./sol-balance.sh 7vWj...yourAddress --tokens --usd
 ```
 
-# Auto-refresh every 60s
+**Auto-refresh every 60s**
 ```bash
 ./sol-balance.sh 7vWj...yourAddress --tokens --usd --watch 60
 ```
 Press Ctrl+C to stop watch mode.
 
-Notes
+## Notes
+
 	- Uses public Solana RPC (api.mainnet-beta.solana.com). Rate limits apply.
+	
 	- For higher limits, edit RPC_URL to use a dedicated provider (e.g., Triton One, Helius).
-License
 
 ## Additional Feature Requests
 Email: ktools@tuta.com
