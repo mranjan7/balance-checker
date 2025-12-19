@@ -26,11 +26,11 @@ brew install curl jq
 ```bash
 ./sol-balance.sh  [options]
 ```
-Options. 
-	•	`-t, --tokens` Show popular token balances. 
-	•	`-u, --usd` Show USD values. 
-	•	`-w, --watch N` Auto-refresh every N seconds. 
-	•	`-h, --help` Show help. 
+Options<br> 
+		`-t, --tokens` Show popular token balances.<br> 
+		`-u, --usd` Show USD values.<br> 
+		`-w, --watch N` Auto-refresh every N seconds.<br> 
+		`-h, --help` Show help.<br> 
 ## Examples
 **Basic SOL balance**
 ```bash
