@@ -17,6 +17,7 @@ Lightweight Bash script to check SOL and popular token balances for a Solana wal
 **Debian/Ubuntu:**
 ```bash
 sudo apt install curl jq bc
+'''
 **macOS (Homebrew):**
 brew install curl jq bc
 ## Usage
