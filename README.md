@@ -46,13 +46,11 @@ Options
 ./sol-balance.sh 7vWj...yourAddress --tokens --usd --watch 60
 ```
 Press Ctrl+C to stop watch mode.
+
 Notes
-	•	Uses public Solana RPC (api.mainnet-beta.solana.com). Rate limits apply.
-	•	For higher limits, edit RPC_URL to use a dedicated provider (e.g., Triton One, Helius).
+	- Uses public Solana RPC (api.mainnet-beta.solana.com). Rate limits apply.
+	- For higher limits, edit RPC_URL to use a dedicated provider (e.g., Triton One, Helius).
 License
-## Feature Requests
-Email: solana.tools.contact@gmail.com
-## Donations
-If this tool is useful to you, consider supporting development:
-SOL Donation Address: ReplaceWithYourActualDonationAddress
-Thank you! 
+
+## Additional Feature Requests
+Email: ktools@tuta.com
