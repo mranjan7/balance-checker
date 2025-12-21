@@ -84,7 +84,7 @@ fetch_transaction_details(){
 	from=$(echo "$tx_details" | jq -r '.accounts[1]')
 	amount=$(echo "$tx_details"|jq -r '.data')
 
-	if [[ "$program_type == "system" ]]; then
+	if [[ "$program_type" == "system" ]]; then
 		amount_sol=$(echo "scale=9; $amount/1000000000" | bc -1)
 		amount_usd=$(echo "scale=9; $amount_sol*$sol_price" | bc -l)
 		currency="SOL"
@@ -95,7 +95,6 @@ fetch_transaction_details(){
 	fi
 	
 }
-
 get_transactions(){
 	local wallet_address="$1"
 	local transactiona=$(curl -s -X POST $RPC_URL \
@@ -106,7 +105,7 @@ get_transactions(){
 			"method":"getConfirmedSignaturesForAddress2",
 			"params":["'$wallet_address'",{"limit":10}]}'
 			| jq -r '.result[].signature')
-	printf("%-25s %-20s %-20s %-20s %-10s\n", "Transaction Signature", "Program Type", "From", "To", "Amount (Currency,USD)")
+	printf "%-25s %-20s %-20s %-20s %-10s\n" "Transaction Signature" "Program Type" "From" "To" "Amount (Currency,USD)"
 	echo "------------------------------------------------------------------------------------------------------------------"
 	for signature in $transactions; do
 		tx_details = $(fetch_transaction_details "$signature")
