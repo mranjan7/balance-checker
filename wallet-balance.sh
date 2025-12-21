@@ -105,7 +105,7 @@ get_transactions(){
 	echo "Fetching recent transactions for: $wallet_address"
 	echo
 
-	local signatures=$(curl -s -X POST "$RPC_URL"\
+	local signatures=$(curl -s -X POST "$RPC_URL" \
 		-H "Content-Type:application/json" \
 		-d '{
 			"jsonrpc":"2.0",
