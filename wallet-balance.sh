@@ -68,6 +68,19 @@ get_sol_price_usd(){
 	jq -r '.solana.usd //"N/A"'
 }
 
+get_transactions(){
+	local rpc_url = "https://api.mainnet-beta.solana.com"
+	local wallet_address = "$1"
+	local trabsactiona = $(curl -s -X POST $rpc_url \
+		-H "Content-Type: application/json" \
+		-d'{
+			"jsonrpc":"2.0"
+			"id":1,
+			"method":"getConfirmedSignaturesForAddress2",
+			"params":["'$wallet_address'",{"limit":10}]}'
+			| jq -r '.result[].signature')
+}
+
 display_balance(){
 	local wallet="$1"
 	local show_tokens="$2"
@@ -93,6 +106,10 @@ display_balance(){
 			printf " %-6s %s\n" "$symbol:" "$balance"
 		done
 	fi
+	echo "TOP TRENDING"
+	echo "COIN"
+	curl -s -X GET "https://api.coingecko.com/api/v3/search/trending" \
+		-H "accept: application/json" | jq -r '.coins[0].item.name'	
 	echo ""
 }
 
