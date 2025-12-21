@@ -68,7 +68,7 @@ get_sol_price_usd(){
 	jq -r '.solana.usd //"N/A"'
 }
 
-SOL_PRICE=$(curl -s https://api.coingecko.com/api/V3/simple/price?ids=solana&vs_currencies=usd | js -r '.solana.usd')
+SOL_PRICE=$(curl -s "https://api.coingecko.com/api/V3/simple/price?ids=solana&vs_currencies=usd" | jq -r '.solana.usd')
 
 fetch_transaction_details(){
 	local signature=$1
@@ -97,9 +97,8 @@ fetch_transaction_details(){
 	echo "$signature|$program_type|$from|$to|$amount_sol $currency (\$$(printf '%.2f' $amount_usd))"
 }
 get_transactions(){
-	local rpc_url = "https://api.mainnet-beta.solana.com"
 	local wallet_address = "$1"
-	local trabsactiona = $(curl -s -X POST $rpc_url \
+	local trabsactiona = $(curl -s -X POST $RPC_URL \
 		-H "Content-Type: application/json" \
 		-d'{
 			"jsonrpc":"2.0"
@@ -147,6 +146,7 @@ display_balance(){
 	curl -s -X GET "https://api.coingecko.com/api/v3/search/trending" \
 		-H "accept: application/json" | jq -r '.coins[0].item.name'	
 	echo ""
+	get_transactions "$wallet"
 }
 
 WALLET=""
