@@ -68,6 +68,34 @@ get_sol_price_usd(){
 	jq -r '.solana.usd //"N/A"'
 }
 
+SOL_PRICE=$(curl -s https://api.coingecko.com/api/V3/simple/price?ids=solana&vs_currencies=usd | js -r '.solana.usd')
+
+fetch_transaction_details(){
+	local signature=$1
+	tx_details=$(curl -s -X POST $RPC_URL \
+	-H "Content-Type: application/json" \
+	-d'{
+		"jsonrpc":"2.0",
+		"id":1,
+		"method":"getConfirmedTransaction",
+		"params":["'$signature'"]
+	}'| jq -r '.result.transaction.message.instructions[]')
+	program_type=$(echo "$tx_details" | jq -r '.program')
+	from=$(echo "$tx_details" | jq -r '.accounts[1]')
+	amount=$(echo "$tx_details"|jq -r '.data')
+
+	if["$program_type == "system"]; then
+		amount_sol=$(echo "$amount/1000000000"|bc -1)
+		amount_usd=$(echo "$amount_sol*$sol_price"|bc -l)
+		currency="SOL"
+	else
+		amount_sol=0
+		amount_usd=0
+		currency="Unknown"
+	fi
+	
+	echo "$signature|$program_type|$from|$to|$amount_sol $currency (\$$(printf '%.2f' $amount_usd))"
+}
 get_transactions(){
 	local rpc_url = "https://api.mainnet-beta.solana.com"
 	local wallet_address = "$1"
@@ -82,6 +110,10 @@ get_transactions(){
 	printf "%-25s %-20s %-20s %-20s %-10s\n" "Transaction Signature" "Program Type" "From" "To" "Amount (Currency,USD)"
 	echo "------------------------------------------------------------------------------------------------------------------"
 	for signature in $transactions; do
+		tx_details = $(fetch_transaction_details "$signature")
+		echo "$tx_details"
+	done
+}
 
 
 
