@@ -97,21 +97,66 @@ fetch_transaction_details(){
 }
 get_transactions(){
 	local wallet_address="$1"
-	local transactiona=$(curl -s -X POST $RPC_URL \
-		-H "Content-Type: application/json" \
-		-d'{
+	local RPC_URL="${RPC_URL="${RPC_URL:-https://api.mainnet-beta.solana.com"
+	if [[ -z "$wallet_address" ]]; then
+		echo "ERROR: Wallet address is required"
+		return 1
+	fi
+	echo "Fetching recent transactions for: $wallet_address"
+	echo
+
+	local signatures=$(curl -s -X POST "$RPC_URL"\
+		-H "Content-Type:application/json" \
+		-d '{
 			"jsonrpc":"2.0",
-			"id":1,
-			"method":"getConfirmedSignaturesForAddress2",
-			"params":["'$wallet_address'",{"limit":10}]}'
-			| jq -r '.result[].signature')
-	printf "%-25s %-20s %-20s %-20s %-10s\n" "Transaction Signature" "Program Type" "From" "To" "Amount (Currency,USD)"
-	echo "------------------------------------------------------------------------------------------------------------------"
-	for signature in $transactions; do
-		tx_details = $(fetch_transaction_details "$signature")
+			"id": 1,
+			"method":"getSignaturesForAddress",
+			"params":[
+				"'"$wallet_address"'",
+				{
+					"limit":10,
+					"commitment":"confirmed"
+				}
+			]	
+		}' | jq -r '.result[].signature // empty')
+	if [[ -z "$signatures" ]]; then
+		echo "No transactions found or API error."
+		return 1
+	fi
+
+	printf "%-66s %-12s %-20s %-20s %-15s\n" "Transaction Signature" "Status" "Block Time" "Fee (SOL)" "Program"
+	echo "--------------------------------------------------------------------------------------------------------"
+
+	for signature in $signatures; do
+		local tx_details
+		tx_details=$(fetch_transaction_details "signature")
+	
+	if [[ -n "$tx_details" ]]; then
 		echo "$tx_details"
+	else
+		local basic_info=$(curl -s -X POST "$RPC_URL" \
+			-H "Content-Type:application/json" \
+			-d '{
+				"jsonrpc": "2.0",
+				"id": 1,
+				"method": "getTransaction",
+				"params": [
+					"'"$signature"'",
+					{"encoding": "jsonParsed","commitment":"confirmed"}
+				]
+			}' | 	jq -r '
+				if .result then
+					"\(.result.transaction.signatures[0]) |\(.result.meta.err //
+					"Success") |\(result.blockTime // "N/A" | todate) | \(.result.meta.fee / 1000000000) SOL"
+				else
+					"'"$signature"' | Error | N/A | N/A"
+				end
+			')
+			printf "%-66s %-12s %-20s %-15s\n" "$basic_info "unknown"
+		fi
 	done
 }
+		
 
 
 
