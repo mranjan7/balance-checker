@@ -79,7 +79,11 @@ get_transactions(){
 			"method":"getConfirmedSignaturesForAddress2",
 			"params":["'$wallet_address'",{"limit":10}]}'
 			| jq -r '.result[].signature')
-}
+	printf "%-25s %-20s %-20s %-20s %-10s\n" "Transaction Signature" "Program Type" "From" "To" "Amount (Currency,USD)"
+	echo "------------------------------------------------------------------------------------------------------------------"
+	for signature in $transactions; do
+
+
 
 display_balance(){
 	local wallet="$1"
