@@ -1,11 +1,13 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -euo pipefail
+
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+BLINK='\033[0;35m'
 NC='\033[0m' # No color
 
 RPC_URL="https://api.mainnet-beta.solana.com"
@@ -27,6 +29,8 @@ if ! command -v jq >/dev/null 2>&1; then
 	exit 1
 fi
 	
+
+
 
 print_usage(){
 	cat <<EOF
@@ -68,28 +72,35 @@ get_sol_price_usd(){
 	jq -r '.solana.usd //"N/A"'
 }
 
+SOL_PRICE=0
+
+set +e +o pipefail
+
 SOL_PRICE=$(curl -s "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd" | jq -r '.solana.usd')
+
+
+status=$?
+
+set -euo pipefail
+
+
 
 fetch_transaction_details(){
 	local signature=$1
-	echo $signature
+	local n=5
+	local short_sig="" 
+	short_sig=$(echo "${signature:0:n}...${signature: -n}")
+	printf "Transaction : %s\n" $short_sig
 	tx_details=$(curl -s -X POST $RPC_URL \
 	-H "Content-Type: application/json" \
-	-d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTransaction\",\"params\":[\"$signature\",{\"encoding\": \"jsonParsed\",\"maxSupportedTransactionVersion\":0}]}") | jq -r '.result.meta.innerInstructions[0]' 
-	echo "tx_details"  "$tx_details"
-	program_type=$(echo "$tx_details" | jq -r '.program')
-	from=$(echo "$tx_details" | jq -r '.accounts[1]')
-	amount=$(echo "$tx_details"|jq -r '.data')
+	-d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTransaction\",\"params\":[\"$signature\",{\"encoding\": \"jsonParsed\",\"maxSupportedTransactionVersion\":0}]}")
 
-	if [[ "$program_type" == "system" ]]; then
-		amount_sol=$(echo "scale=9; $amount/1000000000" | bc -1)
-		amount_usd=$(echo "scale=9; $amount_sol*$sol_price" | bc -l)
-		currency="SOL"
-	else
-		amount_sol=0
-		amount_usd=0
-		currency="Unknown"
-	fi
+	local slot=$(echo "$tx_details" | jq '.result.slot')
+	local block_time=$(echo "$tx_details" | jq '.result.blockTime')
+	local status=$(echo "$tx_details" | jq '.result.meta.err')
+	local priority_fee=$(echo "$tx_details" | jq '.result.meta.fee')
+
+	printf "Block Time : %s Slot : %s Status : %s Priority Fee : %s" $block_time
 	
 }
 get_transactions(){
@@ -103,10 +114,8 @@ get_transactions(){
 
 	local signatures=$(curl -s -X POST "$RPC_URL" \
 		-H "Content-Type:application/json" \
-		-d "{\"jsonrpc\":\"2.0\",\"id\": 1,\"method\":\"getSignaturesForAddress\",\"params\":[\"$wallet_address\",{\"limit\":10}]}" | jq -r '.result[].signature')
+		-d "{\"jsonrpc\":\"2.0\",\"id\": 1,\"method\":\"getSignaturesForAddress\",\"params\":[\"$wallet_address\",{\"limit\":3}]}" | jq -r '.result[].signature')
 
-	printf "%-66s %-12s %-20s %-20s %-15s\n" "Transaction Signature" "Status" "Block Time" "Fee SOL" "Program"
-	echo "--------------------------------------------------------------------------------------------------------"
 
 	for signature in $signatures; do
 		local tx_details
@@ -143,12 +152,16 @@ display_balance(){
 			printf " %-6s %s\n" "$symbol:" "$balance"
 		done
 	fi
-	echo "TOP TRENDING"
-	echo "COIN"
-	curl -s -X GET "https://api.coingecko.com/api/v3/search/trending" \
-		-H "accept: application/json" | jq -r '.coins[0].item.name'	
-	echo ""
+
 	get_transactions "$wallet"
+
+	echo -e "${BLINK}TOP TRENDING"
+	local coin=$(echo curl -s -X GET "https://api.coingecko.com/api/v3/search/trending" \
+		-H "accept: application/json" | jq -r '.coins[0].item.name')
+	local nft=$(echo curl -s -X GET "https://api.coingecko.com/api/v3/search/trending" \
+		-H "accept: application/json" | jq -r '.nfts[0].item.name')
+	printf "COIN : %s   NFT : %s" "$coin" "$nft"
+	echo ""
 }
 
 WALLET=""
