@@ -75,7 +75,7 @@ fetch_transaction_details(){
 	echo $signature
 	tx_details=$(curl -s -X POST $RPC_URL \
 	-H "Content-Type: application/json" \
-	-d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getConfirmedTransaction\",\"params\":[\"$signature\"]" | jq -r '.result.transaction.message.instructions[]')
+	-d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTransaction\",\"params\":[\"$signature\",{\"encoding\": \"jsonParsed\",\"maxSupportedTransactionVersion\":0}]}") | jq -r '.result.meta.innerInstructions[0]' 
 	echo "tx_details"  "$tx_details"
 	program_type=$(echo "$tx_details" | jq -r '.program')
 	from=$(echo "$tx_details" | jq -r '.accounts[1]')
