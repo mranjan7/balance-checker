@@ -72,9 +72,11 @@ SOL_PRICE=$(curl -s "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs
 
 fetch_transaction_details(){
 	local signature=$1
+	echo $signature
 	tx_details=$(curl -s -X POST $RPC_URL \
 	-H "Content-Type: application/json" \
 	-d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getConfirmedTransaction\",\"params\":[\"$signature\"]" | jq -r '.result.transaction.message.instructions[]')
+	echo "tx_details"  "$tx_details"
 	program_type=$(echo "$tx_details" | jq -r '.program')
 	from=$(echo "$tx_details" | jq -r '.accounts[1]')
 	amount=$(echo "$tx_details"|jq -r '.data')
@@ -92,7 +94,6 @@ fetch_transaction_details(){
 }
 get_transactions(){
 	local wallet_address="$1"
-	local RPC_URL="${RPC_URL="${RPC_URL:-https://api.mainnet-beta.solana.com}"
 	if [[ -z "$wallet_address" ]]; then
 		echo "ERROR: Wallet address is required"
 		return 1
@@ -102,18 +103,14 @@ get_transactions(){
 
 	local signatures=$(curl -s -X POST "$RPC_URL" \
 		-H "Content-Type:application/json" \
-		-d "{\"jsonrpc\":\"2.0\",\"id\": 1,\"method\":\"getSignaturesForAddress\",\"params\":[\"$wallet_address\",{\"limit\":10}]}" | jq -r '.result[].signature // empty')
-	if [[ -z "$signatures" ]]; then
-		echo "No transactions found or API error."
-		return 1
-	fi
+		-d "{\"jsonrpc\":\"2.0\",\"id\": 1,\"method\":\"getSignaturesForAddress\",\"params\":[\"$wallet_address\",{\"limit\":10}]}" | jq -r '.result[].signature')
 
 	printf "%-66s %-12s %-20s %-20s %-15s\n" "Transaction Signature" "Status" "Block Time" "Fee SOL" "Program"
 	echo "--------------------------------------------------------------------------------------------------------"
 
 	for signature in $signatures; do
 		local tx_details
-		tx_details=$(fetch_transaction_details "signature")
+		tx_details=$(fetch_transaction_details "$signature")
 		echo "$tx_details"
 	done
 }
