@@ -47,11 +47,3 @@ Options<br>
 ```
 Press Ctrl+C to stop watch mode.
 
-## Notes
-
-	- Uses public Solana RPC (api.mainnet-beta.solana.com). Rate limits apply.
-	
-	- For higher limits, edit RPC_URL to use a dedicated provider (e.g., Triton One, Helius).
-
-## Additional Feature Requests
-Email: ktools@tuta.com
