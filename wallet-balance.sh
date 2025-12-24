@@ -7,7 +7,9 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-BLINK='\033[0;35m'
+ORANGE='\033[0;5;38;5;208m'
+BOLD='\033[1m'
+BLINK='\033[5m'
 NC='\033[0m' # No color
 
 RPC_URL="https://api.mainnet-beta.solana.com"
@@ -90,17 +92,29 @@ fetch_transaction_details(){
 	local n=5
 	local short_sig="" 
 	short_sig=$(echo "${signature:0:n}...${signature: -n}")
-	printf "Transaction : %s\n" $short_sig
+
+	printf "${BLUE}Transaction :${NC} %s\n" $short_sig
+
 	tx_details=$(curl -s -X POST $RPC_URL \
 	-H "Content-Type: application/json" \
 	-d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"getTransaction\",\"params\":[\"$signature\",{\"encoding\": \"jsonParsed\",\"maxSupportedTransactionVersion\":0}]}")
 
 	local slot=$(echo "$tx_details" | jq '.result.slot')
 	local block_time=$(echo "$tx_details" | jq '.result.blockTime')
+	if [ "${block_time}" == "null" ]; then
+		block_time="0"
+	fi
 	local status=$(echo "$tx_details" | jq '.result.meta.err')
+	if [ "${status}" == "null" ]; then
+		status=$(echo -e "${GREEN}Success${NC}")
+	else
+		status=$(echo -e "${RED}Failure${NC}")
+	fi
 	local priority_fee=$(echo "$tx_details" | jq '.result.meta.fee')
+	local fee_sol=$(echo "scale=4; $priority_fee/1000000000"|bc -l 2>/dev/null || echo "0")
 
-	printf "Block Time : %s Slot : %s Status : %s Priority Fee : %s" $block_time
+	printf "${BLUE}Block Time :${NC} %s (%s) ${BLUE}Slot :${NC} %s ${BLUE}Status :${NC} %s ${BLUE}Priority Fee :${NC} %s (%s SOL)\n" "$block_time" "$(date -d @$block_time)" "$slot" "$status" "$priority_fee" "$fee_sol"
+	echo
 	
 }
 get_transactions(){
@@ -109,7 +123,7 @@ get_transactions(){
 		echo "ERROR: Wallet address is required"
 		return 1
 	fi
-	echo "Fetching recent transactions for: $wallet_address"
+	echo -e "${BLUE}Fetching recent transactions..."
 	echo
 
 	local signatures=$(curl -s -X POST "$RPC_URL" \
@@ -121,6 +135,7 @@ get_transactions(){
 		local tx_details
 		tx_details=$(fetch_transaction_details "$signature")
 		echo "$tx_details"
+		echo
 	done
 }
 		
@@ -134,8 +149,10 @@ display_balance(){
 	local lamports=$(get_sol_balance "$wallet")
 	local sol=$(echo "scale=4; $lamports/1000000000"|bc -l 2>/dev/null || echo "0")
 
+	echo
 	echo -e "${BLUE}Wallet:${NC} $wallet"
 	echo -e "${GREEN}SOL balance:${NC} $sol SOL"
+	echo
 
 	if [[ "$show_usd" == true ]]; then
 		local price=$(get_sol_price_usd)
@@ -155,12 +172,18 @@ display_balance(){
 
 	get_transactions "$wallet"
 
-	echo -e "${BLINK}TOP TRENDING"
-	local coin=$(echo curl -s -X GET "https://api.coingecko.com/api/v3/search/trending" \
-		-H "accept: application/json" | jq -r '.coins[0].item.name')
-	local nft=$(echo curl -s -X GET "https://api.coingecko.com/api/v3/search/trending" \
-		-H "accept: application/json" | jq -r '.nfts[0].item.name')
-	printf "COIN : %s   NFT : %s" "$coin" "$nft"
+	echo
+	echo  -e  "${BOLD}${BLINK}${ORANGE}TOP TRENDING ${NC}"
+	echo
+
+	 local coin=$(curl -s -X GET "https://api.coingecko.com/api/v3/search/trending" \
+		 -H "accept: application/json" | jq -r '.coins[0].item.name')
+
+	local nft=$(curl -s -X GET "https://api.coingecko.com/api/v3/search/trending" \
+		-H "accept: application/json" | jq -r '.nfts[0].name')
+
+	printf "${BLUE}Coin :${NC} ${YELLOW}%s${NC} ${BLUE}NFT :${NC} ${YELLOW}%s${NC}\n" "$coin" "$nft"
+
 	echo ""
 }
 
